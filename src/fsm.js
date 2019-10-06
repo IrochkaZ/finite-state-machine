@@ -4,6 +4,10 @@ class FSM {
      * @param config
      */
     constructor(config) {
+        if (!config) {
+            throw Error('Error!');
+        }
+
         this.config = config;
         this.initState = '';
         this.currentState = this.config.init;
@@ -58,26 +62,52 @@ class FSM {
      * @param event
      * @returns {Array}
      */
-    getStates(event) { }
+    getStates(event) {
+        const arr = Object.keys(this.config.states);
+        arr.forEach(function (element) {
+            return element;
+        })
+
+        return arr.forEach(function (state) {
+            if (this.config.states[state].transitions[event] != undefined) {
+                return state;
+            }
+        });
+    }
 
     /**
      * Goes back to previous state.
      * Returns false if undo is not available.
      * @returns {Boolean}
      */
-    undo() { }
+    undo() {
+        if (this.previousState == '') {
+            return false
+        } else {
+            this.nextState = this.currentState;
+            this.currentState = this.previousState;
+            this.previousState = '';
+            return true;
+        }
+    }
+
 
     /**
      * Goes redo to state.
      * Returns false if redo is not available.
      * @returns {Boolean}
      */
-    redo() { }
+    redo() {
+
+    }
 
     /**
      * Clears transition history
      */
-    clearHistory() { }
+    clearHistory() {
+
+
+    }
 }
 
 module.exports = FSM;
