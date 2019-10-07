@@ -4,20 +4,20 @@ class FSM {
      * @param config
      */
     constructor(config) {
-        if (!config) {
-            throw Error('Error');
-        }
+            if (!config) {
+                throw Error('Error');
+            }
 
-        this.config = config;
-        this.initState = '';
-        this.currentState = this.config.initial;
-        this.transitionState = '';
-        this.previousState = '';
-    }
-    /**
-     * Returns active state.
-     * @returns {String}
-     */
+            this.config = config;
+            this.initState = '';
+            this.currentState = this.config.initial;
+            this.transitionState = '';
+            this.previousState = '';
+        }
+        /**
+         * Returns active state.
+         * @returns {String}
+         */
     getState() {
         return this.currentState;
     }
@@ -28,8 +28,8 @@ class FSM {
      */
     changeState(state) {
         if (this.config.states[state]) {
-            this.currentState = state;
             this.previousState = this.currentState;
+            this.currentState = state;
         } else {
             throw new Error('Error');
         }
@@ -64,26 +64,24 @@ class FSM {
      */
     getStates(event) {
         var arr = [];
-        var arr2= [];
+        var arr2 = [];
 
-        Object.keys(this.config.states).forEach((el)=>{
+        Object.keys(this.config.states).forEach((el) => {
             arr.push(el);
         });
 
-        if(arguments.length<1){
+        if (arguments.length < 1) {
             return arr;
         }
 
-        if(arguments.length > 0){
-            arr2 =  arr.forEach((state)=>{
-                if(this.config.states[state].transitions[event]!== undefined){
-                    return state;
+        if (event !== "") {
+            arr.forEach((state) => {
+                if (this.config.states[state].transitions[event]) {
+                    arr2.push(state);
                 }
-                
-                return arr2;
             });
+            return arr2;
 
-            console.log(arr2);
         }
 
         return [];
@@ -95,12 +93,14 @@ class FSM {
      * @returns {Boolean}
      */
     undo() {
-        if (this.previousState !== '') {
-            this.previousState = this.currentState;
+        if (this.previousState == '') {
+            return false
+        } else {
+            this.transitionState = this.currentState;
             this.currentState = this.previousState;
             this.previousState = '';
             return true;
-        } else { return false;}
+        }
     }
 
 
@@ -110,20 +110,22 @@ class FSM {
      * @returns {Boolean}
      */
     redo() {
-        if (this.transitionState !== '') {
+        if (this.transitionState == '') {
+            return false
+        } else {
             this.previousState = this.currentState;
-            this.currentState =this.transitionState;
-            this.transitionState=' ';
+            this.currentState = this.transitionState;
+            this.transitionState = '';
             return true;
-        } else {return false}
+        }
     }
 
     /**
      * Clears transition history
      */
     clearHistory() {
-        this.previousState='';
-        this.transitionState='';
+        this.previousState = '';
+        this.transitionState = '';
     }
 }
 
