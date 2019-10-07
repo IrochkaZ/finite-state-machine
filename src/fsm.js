@@ -5,12 +5,12 @@ class FSM {
      */
     constructor(config) {
         if (!config) {
-            throw Error('Error!');
+            throw Error('Error');
         }
 
         this.config = config;
         this.initState = '';
-        this.currentState = this.config.init;
+        this.currentState = this.config.initial;
         this.transitionState = '';
         this.previousState = '';
     }
@@ -31,7 +31,7 @@ class FSM {
             this.currentState = state;
             this.previousState = this.currentState;
         } else {
-            throw new Error('Error!!!');
+            throw new Error('Error');
         }
     }
 
@@ -40,11 +40,11 @@ class FSM {
      * @param event
      */
     trigger(event) {
-        if (this.config.states[this.currentState].transitions[event]) {
+        if (this.config.states[this.currentState].transitions[event] !== undefined) {
             this.previousState = this.currentState;
             this.currentState = this.config.states[this.currentState].transitions[event];
         } else {
-            throw new Error('Error!!!');
+            throw new Error('Error');
         }
     }
 
@@ -54,7 +54,7 @@ class FSM {
      */
     reset() {
         this.previousState = this.currentState;
-        this.currentState = this.config.init;
+        this.currentState = this.config.initial;
     };
     /**
      * Returns an array of states for which there are specified event transition rules.
@@ -63,16 +63,30 @@ class FSM {
      * @returns {Array}
      */
     getStates(event) {
-        const arr = Object.keys(this.config.states);
-        arr.forEach(function (element) {
-            return element;
-        })
+        var arr = [];
+        var arr2= [];
 
-        return arr.forEach(function (state) {
-            if (this.config.states[state].transitions[event] != undefined) {
-                return state;
-            }
+        Object.keys(this.config.states).forEach((el)=>{
+            arr.push(el);
         });
+
+        if(arguments.length<1){
+            return arr;
+        }
+
+        if(arguments.length > 0){
+            arr2 =  arr.forEach((state)=>{
+                if(this.config.states[state].transitions[event]!== undefined){
+                    return state;
+                }
+                
+                return arr2;
+            });
+
+            console.log(arr2);
+        }
+
+        return [];
     }
 
     /**
@@ -81,14 +95,12 @@ class FSM {
      * @returns {Boolean}
      */
     undo() {
-        if (this.previousState == '') {
-            return false
-        } else {
-            this.nextState = this.currentState;
+        if (this.previousState !== '') {
+            this.previousState = this.currentState;
             this.currentState = this.previousState;
             this.previousState = '';
             return true;
-        }
+        } else { return false;}
     }
 
 
@@ -98,15 +110,20 @@ class FSM {
      * @returns {Boolean}
      */
     redo() {
-
+        if (this.transitionState !== '') {
+            this.previousState = this.currentState;
+            this.currentState =this.transitionState;
+            this.transitionState=' ';
+            return true;
+        } else {return false}
     }
 
     /**
      * Clears transition history
      */
     clearHistory() {
-
-
+        this.previousState='';
+        this.transitionState='';
     }
 }
 
